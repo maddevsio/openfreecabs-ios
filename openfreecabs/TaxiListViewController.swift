@@ -38,7 +38,38 @@ class TaxiListViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        print("\(companies[indexPath.row].contacts.count)")
+        
+        if (companies[indexPath.row].contacts.count > 0) {
+            var actionsArray: [UIAlertAction] = []
+            for i in 0..<companies[indexPath.row].contacts.count {
+                let action = UIAlertAction(title: companies[indexPath.row].contacts[i].type, style: UIAlertActionStyle.Default, handler: { (action) in
+                    if (self.companies[indexPath.row].contacts[i].type == "sms") {
+                        let phoneUrl : NSURL = NSURL(string: "sms:" + self.companies[indexPath.row].contacts[i].contactNumber)!
+                        UIApplication.sharedApplication().openURL(phoneUrl)
+                    } else {
+                        let phoneUrl : NSURL = NSURL(string: "tel:" + self.companies[indexPath.row].contacts[i].contactNumber)!
+                        UIApplication.sharedApplication().openURL(phoneUrl)
+                    }
+                })
+                actionsArray.append(action)
+            }
+            showAlertWithContacts(actionsArray)
+        }
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
+    }
+    
+    func showAlertWithContacts(actions: [UIAlertAction]) {
+        let alertController = UIAlertController(title: "Контакты служб", message:
+            "", preferredStyle: UIAlertControllerStyle.ActionSheet)
+        
+        for i in 0..<actions.count {
+            alertController.addAction(actions[i])
+        }
+        
+        alertController.addAction(UIAlertAction(title: "Назад".localized(), style: UIAlertActionStyle.Cancel,handler: nil))
+        
+        self.presentViewController(alertController, animated: true, completion: nil)
     }
 
     override func didReceiveMemoryWarning() {

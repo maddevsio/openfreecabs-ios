@@ -18,6 +18,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
     @IBOutlet weak var myMarkerOnMap: UIImageView!
     @IBOutlet weak var findMeButton: UIBarButtonItem!
     @IBOutlet weak var ktBottomConstraint: NSLayoutConstraint!
+    @IBOutlet weak var addressViewHeightConstraint: NSLayoutConstraint!
     
     let locationManager = CLLocationManager()
     var userLocation = CLLocationCoordinate2DMake(0, 0)
@@ -25,11 +26,13 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
     var driversMarker: [GMSMarker] = []
     var companiesModel: [CompaniesModel] = []
     var driversModel: [DriversModel] = []
-    //    var userMarker: GMSMarker = GMSMarker(position: CLLocationCoordinate2D(latitude: 0, longitude: 0))
     var isAutorized = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        addressView.hidden = true
+        addressViewHeightConstraint.constant = 0
         
         self.navigationItem.title = "Машины рядом".localized()
         
@@ -76,7 +79,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
         if (locationManager.location == nil) {
             mapView.animateToCameraPosition(GMSCameraPosition(target: CLLocationCoordinate2DMake(42.876041, 74.603458), zoom: 13, bearing: 0, viewingAngle: 0))
         } else {
-            //            userMarker = showMarkerOnMap(locationManager.location!.coordinate, markerName: "userMarker", animated: false)
             mapView.animateToCameraPosition(GMSCameraPosition(target: locationManager.location!.coordinate, zoom: 15, bearing: 0, viewingAngle: 0))
         }
         if (isAutorized) {
@@ -86,9 +88,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
             myMarkerOnMap.hidden = true
             NSUserDefaults.standardUserDefaults().setBool(false, forKey: "alertDisabledLocation")
             showAlertDisabledLocation()
-            // не ок скрываем элементы экрана
-            //            userMarker.map = nil
-            //            orderMarker.map = nil
             
         }
         if CLLocationManager.locationServicesEnabled() {
@@ -110,10 +109,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
         
         locationManager.stopUpdatingLocation()
         
-        //get locaiton
-        //        myMarkerOnMap.hidden = true
-        //        userMarker.map = nil
-        //        userMarker = showMarkerOnMap(userLocation, markerName: "userMarker", animated: false)
         mapView.animateToCameraPosition(GMSCameraPosition(target: userLocation, zoom: 15, bearing: 0, viewingAngle: 0))
         getTaxiList(locationManager.location!.coordinate.latitude, lng: locationManager.location!.coordinate.longitude)
     }
@@ -124,15 +119,16 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
     }
     
     //Markers on map
-    func showMarkerOnMap(coord: CLLocationCoordinate2D, markerName: String, animated: Bool) -> GMSMarker {
-        if (markerName == "userMarker") {
-            //            userMarker.map = nil
-        }
+    func showMarkerOnMap(coord: CLLocationCoordinate2D, markerImage: UIImage, animated: Bool) -> GMSMarker {
+        var icon = markerImage
         let marker : GMSMarker = GMSMarker(position: coord)
         if (animated) {
             marker.appearAnimation = kGMSMarkerAnimationPop
         }
-        marker.icon = UIImage(named: markerName)
+        if (icon.size.height == 0) {
+            icon = UIImage(named: "driverMarker")!
+        }
+        marker.icon = icon
         marker.map = mapView
         return marker
     }
@@ -149,9 +145,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
     
     func mapView(mapView: GMSMapView, willMove gesture: Bool) {
         print("willMove")
-        //        userMarker.map = nil
-        //            orderMarker.map = nil
-        //        myMarkerOnMap.hidden = false
     }
     
     
@@ -160,10 +153,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
         if (isAutorized) {
             addressTextField.placeholder = "Укажите адрес".localized()
         }
-        //        userMarker.map = nil
-        //            orderMarker.map = nil
-        //        userMarker = showMarkerOnMap(position.target, markerName: "userMarker", animated: false)
-        //        myMarkerOnMap.hidden = true
         getTaxiList(position.target.latitude, lng: position.target.longitude)
     }
     
@@ -181,13 +170,14 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
                     
                     for j in 0..<response.result.value!.companies.count {
                         self.driversModel = response.result.value!.companies[j].drivers
+                        let imageIcon = response.result.value!.companies[j].icon
                         print("self.driversModel.count \(self.driversModel.count)")
 
                         for i in 0 ..< self.driversModel.count {
                             
                             let coord = CLLocationCoordinate2D(latitude: self.driversModel[i].lat, longitude: self.driversModel[i].lng)
                             
-                            self.driversMarker.append(self.showMarkerOnMap(coord, markerName: "driverMarker", animated: true))
+                            self.driversMarker.append(self.showMarkerOnMap(coord, markerImage: imageIcon, animated: true))
                             
                             if (self.driversModel[i].lat != 0 && self.driversModel[i].lng != 0) {
                                 self.driversMarker[i].map = self.mapView
@@ -260,10 +250,10 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
             }
             alertController.addAction(openAction)
             
-            let addressManual = UIAlertAction(title: "Указать адрес вручную".localized(), style: .Default) { (action) in
-                self.addressTextField.becomeFirstResponder()
-            }
-            alertController.addAction(addressManual)
+//            let addressManual = UIAlertAction(title: "Указать адрес вручную".localized(), style: .Default) { (action) in
+//                self.addressTextField.becomeFirstResponder()
+//            }
+//            alertController.addAction(addressManual)
             
             self.presentViewController(alertController, animated: true, completion: nil)
         }

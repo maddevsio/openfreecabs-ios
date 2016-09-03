@@ -12,7 +12,7 @@ class OpenFreeCabsApiClient {
     
     static let sharedInstance = OpenFreeCabsApiClient()
     var alamoFireManager : Alamofire.Manager?
-    var baseUrl: String = "https://eb6e911e.ngrok.io/nearest/"
+    var baseUrl: String = "http://openfreecabs.org/nearest/"
     
     init() {
         

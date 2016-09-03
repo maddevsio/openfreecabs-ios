@@ -16,7 +16,7 @@
                         <viewControllerLayoutGuide type="bottom" id="fIc-mA-CDz"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="Dri-1g-gVz">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="536"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="C8f-aD-OSb">
@@ -96,9 +96,6 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="R44-9X-b2d" customClass="GMSMapView">
                                 <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <variation key="widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="0.0" y="0.0" width="400" height="500"/>
-                                </variation>
                             </view>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="userMarker" translatesAutoresizingMaskIntoConstraints="NO" id="aZM-NP-gjl">
                                 <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
@@ -112,8 +109,7 @@
                                         <exclude reference="lk1-Nb-JSa"/>
                                     </mask>
                                 </variation>
-                                <variation key="widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="190" y="236" width="20" height="53"/>
+                                <variation key="widthClass=compact">
                                     <mask key="constraints">
                                         <include reference="WIN-RB-Oq9"/>
                                         <include reference="lk1-Nb-JSa"/>
@@ -195,6 +191,7 @@
                     <connections>
                         <outlet property="addressTextField" destination="xwe-qB-JNj" id="QUO-dk-Ab9"/>
                         <outlet property="addressView" destination="C8f-aD-OSb" id="rZq-7n-Kxu"/>
+                        <outlet property="addressViewHeightConstraint" destination="sS4-yb-6AQ" id="lnE-ju-01u"/>
                         <outlet property="findMeButton" destination="bdK-RN-j1f" id="1jk-re-edw"/>
                         <outlet property="ktBottomConstraint" destination="X1n-uI-Tb2" id="DGu-S0-6Ys"/>
                         <outlet property="ktButton" destination="TeW-HC-rkU" id="9ES-BC-KTW"/>
@@ -218,7 +215,7 @@
                         <viewControllerLayoutGuide type="bottom" id="Wiw-Xz-hcm"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="xbn-9S-UbO">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="536"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="sl2-o6-tcP">
@@ -237,18 +234,12 @@
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
-                                                    <variation key="widthClass=compact" misplaced="YES">
-                                                        <rect key="frame" x="8" y="11" width="174" height="21"/>
-                                                    </variation>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZMQ-NO-5uc">
                                                     <rect key="frame" x="-42" y="-21" width="42" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
-                                                    <variation key="widthClass=compact" misplaced="YES">
-                                                        <rect key="frame" x="190" y="11" width="42" height="21"/>
-                                                    </variation>
                                                 </label>
                                             </subviews>
                                             <constraints>
@@ -291,9 +282,6 @@
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
-                                <variation key="widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="0.0" y="0.0" width="400" height="600"/>
-                                </variation>
                                 <connections>
                                     <outlet property="dataSource" destination="nKr-gX-p1J" id="3ib-DA-u94"/>
                                     <outlet property="delegate" destination="nKr-gX-p1J" id="rGs-c8-ifq"/>

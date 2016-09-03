@@ -51,7 +51,7 @@
 		<true/>
 		<key>NSExceptionDomains</key>
 		<dict>
-			<key>https://eb6e911e.ngrok.io</key>
+			<key>http://openfreecabs.org</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>

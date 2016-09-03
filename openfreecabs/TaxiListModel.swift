@@ -6,7 +6,7 @@
 //  Copyright © 2016 Mad Devs. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 final class TaxiListModel: ResponseObjectSerializable, ResponseCollectionSerializable {
     var success: Bool
