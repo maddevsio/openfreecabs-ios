@@ -8,6 +8,7 @@
 import UIKit
 import CoreLocation
 import GoogleMaps
+import Kingfisher
 
 class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapViewDelegate, UITextFieldDelegate {
     
@@ -31,17 +32,17 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        addressView.hidden = true
+        addressView.isHidden = true
         addressViewHeightConstraint.constant = 0
         
-        self.navigationItem.title = "Машины рядом".localized()
-        
-        ktButton.setTitle("Какие машины рядом?", forState: UIControlState.Normal)
+        ktButton.setTitle("What service is nearest?", for: UIControlState())
         addressTextField.placeholder = "Укажите адрес"
+        ktButton.clipsToBounds = true
+        ktButton.layer.cornerRadius = 5
         
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
-        if CLLocationManager.authorizationStatus() == .NotDetermined {
+        if CLLocationManager.authorizationStatus() == .notDetermined {
             locationManager.requestAlwaysAuthorization()
         }
         
@@ -53,40 +54,44 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
         mapView.settings.allowScrollGesturesDuringRotateOrZoom = false
         mapView.camera = GMSCameraPosition(target: CLLocationCoordinate2DMake(42.876041, 74.603458), zoom: 10, bearing: 0, viewingAngle: 0)
         
-        if (NSUserDefaults.standardUserDefaults().objectForKey("alertDisabledLocation") == nil) {
-            NSUserDefaults.standardUserDefaults().setBool(false, forKey: "alertDisabledLocation")
+        if (UserDefaults.standard.object(forKey: "alertDisabledLocation") == nil) {
+            UserDefaults.standard.set(false, forKey: "alertDisabledLocation")
         }
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(MapViewController.keyboardWillShow(_:)), name: UIKeyboardWillShowNotification, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(MapViewController.keyboardWillHide(_:)), name:UIKeyboardWillHideNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(MapViewController.keyboardWillShow(_:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(MapViewController.keyboardWillHide(_:)), name:NSNotification.Name.UIKeyboardWillHide, object: nil)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        self.navigationItem.title = "OpenFreeCabs".localized()
     }
     
     func checkLocationManagerAuthorization() {
         print("checkLocationManagerAuthorization")
         
         switch CLLocationManager.authorizationStatus() {
-        case .AuthorizedAlways:
+        case .authorizedAlways:
             isAutorized = true
             
-        case .NotDetermined:
+        case .notDetermined:
             isAutorized = false
             locationManager.requestAlwaysAuthorization()
             
-        case .AuthorizedWhenInUse, .Restricted, .Denied:
+        case .authorizedWhenInUse, .restricted, .denied:
             isAutorized = false
         }
         
         if (locationManager.location == nil) {
-            mapView.animateToCameraPosition(GMSCameraPosition(target: CLLocationCoordinate2DMake(42.876041, 74.603458), zoom: 13, bearing: 0, viewingAngle: 0))
+            mapView.animate(to: GMSCameraPosition(target: CLLocationCoordinate2DMake(42.876041, 74.603458), zoom: 13, bearing: 0, viewingAngle: 0))
         } else {
-            mapView.animateToCameraPosition(GMSCameraPosition(target: locationManager.location!.coordinate, zoom: 15, bearing: 0, viewingAngle: 0))
+            mapView.animate(to: GMSCameraPosition(target: locationManager.location!.coordinate, zoom: 15, bearing: 0, viewingAngle: 0))
         }
         if (isAutorized) {
-            myMarkerOnMap.hidden = false
+            myMarkerOnMap.isHidden = false
             // все ок
         } else {
-            myMarkerOnMap.hidden = true
-            NSUserDefaults.standardUserDefaults().setBool(false, forKey: "alertDisabledLocation")
+            myMarkerOnMap.isHidden = true
+            UserDefaults.standard.set(false, forKey: "alertDisabledLocation")
             showAlertDisabledLocation()
             
         }
@@ -95,12 +100,12 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
         }
     }
     
-    func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         print("didChangeAuthorizationStatus")
         checkLocationManagerAuthorization()
     }
     
-    func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         print("didUpdateLocations")
         let locationArray = locations as NSArray
         let locationObj = locationArray.lastObject as! CLLocation
@@ -109,60 +114,60 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
         
         locationManager.stopUpdatingLocation()
         
-        mapView.animateToCameraPosition(GMSCameraPosition(target: userLocation, zoom: 15, bearing: 0, viewingAngle: 0))
+        mapView.animate(to: GMSCameraPosition(target: userLocation, zoom: 15, bearing: 0, viewingAngle: 0))
         getTaxiList(locationManager.location!.coordinate.latitude, lng: locationManager.location!.coordinate.longitude)
     }
     
-    func locationManager(manager: CLLocationManager, didFailWithError error: NSError) {
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print("didFailWithError")
         locationManager.stopUpdatingLocation()
     }
     
     //Markers on map
-    func showMarkerOnMap(coord: CLLocationCoordinate2D, markerImage: UIImage, animated: Bool) -> GMSMarker {
-        var icon = markerImage
+    func showMarkerOnMap(_ coord: CLLocationCoordinate2D, markerImage: UIImage, animated: Bool) -> GMSMarker {
+        
         let marker : GMSMarker = GMSMarker(position: coord)
         if (animated) {
             marker.appearAnimation = kGMSMarkerAnimationPop
         }
-        if (icon.size.height == 0) {
-            icon = UIImage(named: "driverMarker")!
-        }
-        marker.icon = icon
+        marker.icon = markerImage
         marker.map = mapView
         return marker
     }
     
-    func mapView(mapView: GMSMapView, didTapMarker marker: GMSMarker) -> Bool {
+    func mapView(_ mapView: GMSMapView, didTap marker: GMSMarker) -> Bool {
         print("tap marker at lat:\(marker.position.latitude) lng:\(marker.position.longitude)")
         return true //отключение нажатия на маркер
     }
     
-    func mapView(mapView: GMSMapView, didTapAtCoordinate coordinate: CLLocationCoordinate2D) {
+    func mapView(_ mapView: GMSMapView, didTapAt coordinate: CLLocationCoordinate2D) {
         print("didTapAtCoordinate")
 //        checkLocationManagerAuthorization()
     }
     
-    func mapView(mapView: GMSMapView, willMove gesture: Bool) {
+    func mapView(_ mapView: GMSMapView, willMove gesture: Bool) {
         print("willMove")
     }
     
     
-    func mapView(mapView: GMSMapView, idleAtCameraPosition position: GMSCameraPosition) {
-        print("idleAtCameraPosition")
+    func mapView(_ mapView: GMSMapView, idleAt position: GMSCameraPosition) {
         if (isAutorized) {
             addressTextField.placeholder = "Укажите адрес".localized()
         }
         getTaxiList(position.target.latitude, lng: position.target.longitude)
     }
     
-    func getTaxiList(lat: Double, lng: Double) {
-        print("getTaxiList \(lat) \(lng)")
+    func getTaxiList(_ lat: Double, lng: Double) {
         OpenFreeCabsApiClient.sharedInstance.getTaxiList("\(lat)", lng: "\(lng)") { (response) in
+            print("getTaxiList \(response.response)")
             if (response.result.isSuccess) {
                 if (response.result.value!.success) {
                     self.companiesModel = response.result.value!.companies
-                    print("self.companiesModel.count \(self.companiesModel.count)")
+                    
+                    self.companiesModel.sort { (l, r) -> Bool in
+                        return l.drivers.count > r.drivers.count
+                    }
+                    
                     for i in 0 ..< self.driversMarker.count {
                         self.driversMarker[i].map = nil
                     }
@@ -170,25 +175,28 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
                     
                     for j in 0..<response.result.value!.companies.count {
                         self.driversModel = response.result.value!.companies[j].drivers
-                        let imageIcon = response.result.value!.companies[j].icon
-                        print("self.driversModel.count \(self.driversModel.count)")
-
-                        for i in 0 ..< self.driversModel.count {
-                            
-                            let coord = CLLocationCoordinate2D(latitude: self.driversModel[i].lat, longitude: self.driversModel[i].lng)
-                            
-                            self.driversMarker.append(self.showMarkerOnMap(coord, markerImage: imageIcon, animated: true))
-                            
-                            if (self.driversModel[i].lat != 0 && self.driversModel[i].lng != 0) {
-                                self.driversMarker[i].map = self.mapView
-                                print("self.driversMarker[i].map")
-                            } else {
-                                self.driversMarker[i].map = nil
-                                print("self.driversMarker[i].map nil")
+                        
+                        let fullUrl = URL(string: "\(response.result.value!.companies[j].iconURL)") as URL!
+                        KingfisherManager.shared.retrieveImage(with: fullUrl!, options: nil, progressBlock: nil, completionHandler: { (image, error, cacheType, imageURL) in
+                            for i in 0 ..< self.driversModel.count {
+                                
+                                let coord = CLLocationCoordinate2D(latitude: self.driversModel[i].lat, longitude: self.driversModel[i].lng)
+                                
+                                if image != nil {
+                                    self.driversMarker.append(self.showMarkerOnMap(coord, markerImage: image!, animated: true))
+                                } else {
+                                    let placeHolderImage = UIImage(named: "driverMarker")
+                                    self.driversMarker.append(self.showMarkerOnMap(coord, markerImage: placeHolderImage!, animated: true))
+                                }
+                                
+                                if (self.driversModel[i].lat != 0 && self.driversModel[i].lng != 0) {
+                                    self.driversMarker[i].map = self.mapView
+                                } else {
+                                    self.driversMarker[i].map = nil
+                                }
                             }
-                        }
+                        })
                     }
-                    print("driversMarker.count \(self.driversMarker.count)")
                 } else {
                 }
             } else {
@@ -196,56 +204,56 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
         }
     }
     
-    func textFieldShouldReturn(textField: UITextField) -> Bool {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         addressTextField.resignFirstResponder()
         return true
     }
     
-    @IBAction func ktButtonAction(sender: UIButton) {
+    @IBAction func ktButtonAction(_ sender: UIButton) {
         print("ktButtonAction \(addressTextField.text) \(addressTextField.text?.isEmpty)")
         if (isAutorized || !addressTextField.text!.isEmpty) {
-            performSegueWithIdentifier("taxiListSegue", sender: companiesModel)
+            performSegue(withIdentifier: "taxiListSegue", sender: companiesModel)
         } else {
-            NSUserDefaults.standardUserDefaults().setBool(false, forKey: "alertDisabledLocation")
+            UserDefaults.standard.set(false, forKey: "alertDisabledLocation")
             showAlertDisabledLocation()
         }
     }
     
-    @IBAction func findMeAction(sender: UIBarButtonItem) {
-        if (CLLocationManager.authorizationStatus() == CLAuthorizationStatus.AuthorizedAlways) {
+    @IBAction func findMeAction(_ sender: UIBarButtonItem) {
+        if (CLLocationManager.authorizationStatus() == CLAuthorizationStatus.authorizedAlways) {
             if (CLLocationManager.locationServicesEnabled() && locationManager.location != nil) {
-                mapView.animateToCameraPosition(GMSCameraPosition(target: locationManager.location!.coordinate, zoom: 15, bearing: 0, viewingAngle: 0))
+                mapView.animate(to: GMSCameraPosition(target: locationManager.location!.coordinate, zoom: 15, bearing: 0, viewingAngle: 0))
             } else {
                 showSimpleAlert("Внимание".localized(), message: "Не удалось определить ваше местоположение".localized())
             }
         } else {
-            NSUserDefaults.standardUserDefaults().setBool(false, forKey: "alertDisabledLocation")
+            UserDefaults.standard.set(false, forKey: "alertDisabledLocation")
             showAlertDisabledLocation()
         }
     }
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == "taxiListSegue") {
-            let info = segue.destinationViewController as! TaxiListViewController
+            let info = segue.destination as! TaxiListViewController
             info.companies = companiesModel
         }
     }
     
     func showAlertDisabledLocation() {
-        let flagLocation: Bool = NSUserDefaults.standardUserDefaults().objectForKey("alertDisabledLocation") as! Bool
+        let flagLocation: Bool = UserDefaults.standard.object(forKey: "alertDisabledLocation") as! Bool
         if (!flagLocation) {
-            NSUserDefaults.standardUserDefaults().setBool(true, forKey: "alertDisabledLocation")
+            UserDefaults.standard.set(true, forKey: "alertDisabledLocation")
             let alertController = UIAlertController(
                 title: "Получение геолокации отключено".localized(),
                 message: "Для работы с приложением, откройте настройки этого приложения и установить доступ местонахождения, «Всегда»".localized(),
-                preferredStyle: .Alert)
+                preferredStyle: .alert)
             
-            let cancelAction = UIAlertAction(title: "Отмена".localized(), style: .Cancel, handler: nil)
+            let cancelAction = UIAlertAction(title: "Отмена".localized(), style: .cancel, handler: nil)
             alertController.addAction(cancelAction)
             
-            let openAction = UIAlertAction(title: "Открыть настройки".localized(), style: .Default) { (action) in
-                if let url = NSURL(string:UIApplicationOpenSettingsURLString) {
-                    UIApplication.sharedApplication().openURL(url)
+            let openAction = UIAlertAction(title: "Открыть настройки".localized(), style: .default) { (action) in
+                if let url = URL(string:UIApplicationOpenSettingsURLString) {
+                    UIApplication.shared.openURL(url)
                 }
             }
             alertController.addAction(openAction)
@@ -255,14 +263,14 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
 //            }
 //            alertController.addAction(addressManual)
             
-            self.presentViewController(alertController, animated: true, completion: nil)
+            self.present(alertController, animated: true, completion: nil)
         }
     }
     
-    func showSimpleAlert(title: String, message: String) {
-        let alertController = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.Alert)
-        alertController.addAction(UIAlertAction(title: "Назад".localized(), style: UIAlertActionStyle.Default,handler: nil))
-        self.presentViewController(alertController, animated: true, completion: nil)
+    func showSimpleAlert(_ title: String, message: String) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
+        alertController.addAction(UIAlertAction(title: "Назад".localized(), style: UIAlertActionStyle.default,handler: nil))
+        self.present(alertController, animated: true, completion: nil)
     }
     
     override func didReceiveMemoryWarning() {
@@ -270,17 +278,17 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, GMSMapView
         // Dispose of any resources that can be recreated.
     }
     
-    func keyboardWillShow(notification: NSNotification) {
-        var info = notification.userInfo!
-        let keyboardFrame: CGRect = (info[UIKeyboardFrameEndUserInfoKey] as! NSValue).CGRectValue()
+    func keyboardWillShow(_ notification: Notification) {
+        var info = (notification as NSNotification).userInfo!
+        let keyboardFrame: CGRect = (info[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
         
-        UIView.animateWithDuration(0.1, animations: { () -> Void in
+        UIView.animate(withDuration: 0.1, animations: { () -> Void in
             self.ktBottomConstraint.constant = keyboardFrame.height
         })
     }
 
-    func keyboardWillHide(notification: NSNotification) {
-        UIView.animateWithDuration(0.1, animations: { () -> Void in
+    func keyboardWillHide(_ notification: Notification) {
+        UIView.animate(withDuration: 0.1, animations: { () -> Void in
             self.ktBottomConstraint.constant = 0        })
     }
 }

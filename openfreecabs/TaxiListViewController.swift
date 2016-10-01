@@ -15,61 +15,88 @@ class TaxiListViewController: UIViewController, UITableViewDelegate, UITableView
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.navigationItem.title = "Сервисы".localized()
+        self.navigationController!.navigationBar.topItem!.title = ""
+        self.taxiListTable.tableFooterView = UIView.init()
         // Do any additional setup after loading the view.
     }
     
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    override func viewWillAppear(_ animated: Bool) {
+        self.navigationItem.title = "Services list".localized()
+    }
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return companies.count
     }
     
-    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        return 44
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 80
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("taxiListIdentity", forIndexPath: indexPath) as! TaxiListCell
-        cell.setTaxiContentList(companies[indexPath.row].name, count: "\(companies[indexPath.row].drivers.count)")
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "taxiListIdentity", for: indexPath) as! TaxiListCell
+        
+        var allPhoneNumbers = ""
+        var allSmsNumbers = ""
+        for contact in companies[indexPath.row].contacts {
+            if contact.type == "sms" {
+                allSmsNumbers +=  (allSmsNumbers.isEmpty ? "" : " ,") + "\(contact.contactNumber)"
+            } else if contact.type == "phone" {
+                allPhoneNumbers +=  (allPhoneNumbers.isEmpty ? "" : " ,") + "\(contact.contactNumber)"
+            }
+        }
+        
+        cell.setTaxiContentList(companies[indexPath.row].name, count: "\(companies[indexPath.row].drivers.count)", iconUrl: companies[indexPath.row].iconURL, _phoneNumbers: allPhoneNumbers, _smsNumber: allSmsNumbers, index: indexPath.row)
+        cell.separatorInset = UIEdgeInsets.zero
+        cell.layoutMargins = UIEdgeInsets.zero
         return cell
     }
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         print("\(companies[indexPath.row].contacts.count)")
         
-        if (companies[indexPath.row].contacts.count > 0) {
-            var actionsArray: [UIAlertAction] = []
-            for i in 0..<companies[indexPath.row].contacts.count {
-                let action = UIAlertAction(title: companies[indexPath.row].contacts[i].type, style: UIAlertActionStyle.Default, handler: { (action) in
-                    if (self.companies[indexPath.row].contacts[i].type == "sms") {
-                        let phoneUrl : NSURL = NSURL(string: "sms:" + self.companies[indexPath.row].contacts[i].contactNumber)!
-                        UIApplication.sharedApplication().openURL(phoneUrl)
-                    } else {
-                        let phoneUrl : NSURL = NSURL(string: "tel:" + self.companies[indexPath.row].contacts[i].contactNumber)!
-                        UIApplication.sharedApplication().openURL(phoneUrl)
-                    }
-                })
-                actionsArray.append(action)
-            }
-            showAlertWithContacts(actionsArray)
-        }
-        tableView.deselectRowAtIndexPath(indexPath, animated: true)
+        performSegue(withIdentifier: "contactsSegue", sender: companies[indexPath.row])
+        
+//        if (companies[indexPath.row].contacts.count > 0) {
+//            var actionsArray: [UIAlertAction] = []
+//            for i in 0..<companies[indexPath.row].contacts.count {
+//                let action = UIAlertAction(title: companies[indexPath.row].contacts[i].type, style: UIAlertActionStyle.default, handler: { (action) in
+//                    if (self.companies[indexPath.row].contacts[i].type == "sms") {
+//                        let phoneUrl : URL = URL(string: "sms:" + self.companies[indexPath.row].contacts[i].contactNumber)!
+//                        UIApplication.shared.openURL(phoneUrl)
+//                    } else {
+//                        let phoneUrl : URL = URL(string: "tel:" + self.companies[indexPath.row].contacts[i].contactNumber)!
+//                        UIApplication.shared.openURL(phoneUrl)
+//                    }
+//                })
+//                actionsArray.append(action)
+//            }
+//            showAlertWithContacts(actionsArray)
+//        }
+        tableView.deselectRow(at: indexPath, animated: true)
     }
     
-    func showAlertWithContacts(actions: [UIAlertAction]) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if (segue.identifier == "contactsSegue") {
+            let info = segue.destination as! ContactsViewController
+            info.selectedCompany = sender as! CompaniesModel
+        }
+    }
+    
+    func showAlertWithContacts(_ actions: [UIAlertAction]) {
         let alertController = UIAlertController(title: "Контакты служб", message:
-            "", preferredStyle: UIAlertControllerStyle.ActionSheet)
+            "", preferredStyle: UIAlertControllerStyle.actionSheet)
         
         for i in 0..<actions.count {
             alertController.addAction(actions[i])
         }
         
-        alertController.addAction(UIAlertAction(title: "Назад".localized(), style: UIAlertActionStyle.Cancel,handler: nil))
+        alertController.addAction(UIAlertAction(title: "Назад".localized(), style: UIAlertActionStyle.cancel,handler: nil))
         
-        self.presentViewController(alertController, animated: true, completion: nil)
+        self.present(alertController, animated: true, completion: nil)
     }
 
     override func didReceiveMemoryWarning() {

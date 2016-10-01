@@ -8,10 +8,10 @@
 
 import Foundation
 
-public enum BackendError: ErrorType {
-    case Network(error: NSError)
-    case DataSerialization(reason: String)
-    case JSONSerialization(error: NSError)
-    case ObjectSerialization(reason: String)
-    case XMLSerialization(error: NSError)
+public enum BackendError: Error {
+    case network(error: NSError)
+    case dataSerialization(reason: String)
+    case jsonSerialization(error: NSError)
+    case objectSerialization(reason: String)
+    case xmlSerialization(error: NSError)
 }

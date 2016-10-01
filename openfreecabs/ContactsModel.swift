@@ -17,18 +17,22 @@ final class ContactsModel: ResponseObjectSerializable, ResponseCollectionSeriali
         self.contactNumber = ""
     }
     
-    init?(response: NSHTTPURLResponse, representation: AnyObject) {
+    init?(response: HTTPURLResponse, representation: Any) {
+        guard let representation = representation as? [String: Any]
+            else { return nil }
+        
         self.type = ""
-        if (representation.valueForKey("type") != nil && !representation.valueForKey("type")!.isEqual(NSNull())) {
-            self.type = representation.valueForKey("type") as! String
+        if (representation["type"] != nil && !(representation["type"] is NSNull)) {
+            self.type = representation["type"] as! String
         }
+        
         self.contactNumber = ""
-        if (representation.valueForKey("contact") != nil && !representation.valueForKey("contact")!.isEqual(NSNull())) {
-            self.contactNumber = representation.valueForKey("contact") as! String
+        if (representation["contact"] != nil && !(representation["contact"] is NSNull)) {
+            self.contactNumber = representation["contact"] as! String
         }
     }
     
-    class func collection(response response: NSHTTPURLResponse, representation: AnyObject) -> [ContactsModel] {
+    static func collection(response: HTTPURLResponse, representation: Any) -> [ContactsModel] {
         let contactContentArray = representation as! [AnyObject]
         return contactContentArray.map({ContactsModel(response:response, representation: $0)! })
     }

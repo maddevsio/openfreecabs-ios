@@ -24,6 +24,9 @@
 		9003A30A1D71A59E00F2146F /* DriversModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9003A3091D71A59E00F2146F /* DriversModel.swift */; };
 		905BAE461D71C5D700B155D2 /* CompaniesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 905BAE451D71C5D700B155D2 /* CompaniesModel.swift */; };
 		909DA5C21D7AC50100685237 /* ContactsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 909DA5C11D7AC50100685237 /* ContactsModel.swift */; };
+		90A486761D9FB38600DF91EE /* UIColorHex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90A486751D9FB38600DF91EE /* UIColorHex.swift */; };
+		90A486781D9FD0C600DF91EE /* ContactsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90A486771D9FD0C600DF91EE /* ContactsViewController.swift */; };
+		90A4867A1D9FD0E900DF91EE /* ContactCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90A486791D9FD0E900DF91EE /* ContactCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -47,8 +50,10 @@
 		9003A3091D71A59E00F2146F /* DriversModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DriversModel.swift; sourceTree = "<group>"; };
 		905BAE451D71C5D700B155D2 /* CompaniesModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CompaniesModel.swift; sourceTree = "<group>"; };
 		909DA5C11D7AC50100685237 /* ContactsModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsModel.swift; sourceTree = "<group>"; };
+		90A486751D9FB38600DF91EE /* UIColorHex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIColorHex.swift; sourceTree = "<group>"; };
+		90A486771D9FD0C600DF91EE /* ContactsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsViewController.swift; sourceTree = "<group>"; };
+		90A486791D9FD0E900DF91EE /* ContactCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactCell.swift; sourceTree = "<group>"; };
 		AB5AF0F8FAE2242DCB4847E1 /* Pods_OpenFreeCabs.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_OpenFreeCabs.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		FA27F8FA3292AF6C3CCA2D47 /* Pods_openfreecabs.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_openfreecabs.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,7 +71,6 @@
 		157284D02BCFA6C1BE9D124A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				FA27F8FA3292AF6C3CCA2D47 /* Pods_openfreecabs.framework */,
 				AB5AF0F8FAE2242DCB4847E1 /* Pods_OpenFreeCabs.framework */,
 			);
 			name = Frameworks;
@@ -106,6 +110,7 @@
 			isa = PBXGroup;
 			children = (
 				9003A2F61D71A05C00F2146F /* TaxiListCell.swift */,
+				90A486791D9FD0E900DF91EE /* ContactCell.swift */,
 			);
 			name = Cell;
 			sourceTree = "<group>";
@@ -115,6 +120,7 @@
 			children = (
 				9003A2F81D71A06300F2146F /* MapViewController.swift */,
 				9003A2F91D71A06300F2146F /* TaxiListViewController.swift */,
+				90A486771D9FD0C600DF91EE /* ContactsViewController.swift */,
 			);
 			name = ViewController;
 			sourceTree = "<group>";
@@ -139,6 +145,7 @@
 				9003A3031D71A32E00F2146F /* BackendError.swift */,
 				9003A3041D71A32E00F2146F /* ResponseCollectionSerializable.swift */,
 				9003A3051D71A32E00F2146F /* ResponseObjectSerializable.swift */,
+				90A486751D9FB38600DF91EE /* UIColorHex.swift */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -198,6 +205,8 @@
 				TargetAttributes = {
 					9003A2DC1D719EE100F2146F = {
 						CreatedOnToolsVersion = 7.3.1;
+						DevelopmentTeam = MXF8C5A9TK;
+						LastSwiftMigration = 0800;
 					};
 				};
 			};
@@ -292,12 +301,15 @@
 				9003A2FB1D71A06300F2146F /* TaxiListViewController.swift in Sources */,
 				9003A2E11D719EE100F2146F /* AppDelegate.swift in Sources */,
 				9003A2FA1D71A06300F2146F /* MapViewController.swift in Sources */,
+				90A486761D9FB38600DF91EE /* UIColorHex.swift in Sources */,
+				90A4867A1D9FD0E900DF91EE /* ContactCell.swift in Sources */,
 				9003A30A1D71A59E00F2146F /* DriversModel.swift in Sources */,
 				9003A3081D71A32E00F2146F /* ResponseObjectSerializable.swift in Sources */,
 				9003A2F71D71A05C00F2146F /* TaxiListCell.swift in Sources */,
 				9003A2FD1D71A06A00F2146F /* LocalizeString.swift in Sources */,
 				909DA5C21D7AC50100685237 /* ContactsModel.swift in Sources */,
 				9003A3061D71A32E00F2146F /* BackendError.swift in Sources */,
+				90A486781D9FD0C600DF91EE /* ContactsViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -413,11 +425,13 @@
 			baseConfigurationReference = 2BF67014D4C8EAFC40A58D9F /* Pods-OpenFreeCabs.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = MXF8C5A9TK;
 				INFOPLIST_FILE = openfreecabs/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = io.maddevs.openfreecabs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -426,11 +440,13 @@
 			baseConfigurationReference = 756046A86889A76FC5046D26 /* Pods-OpenFreeCabs.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = MXF8C5A9TK;
 				INFOPLIST_FILE = openfreecabs/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = io.maddevs.openfreecabs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};

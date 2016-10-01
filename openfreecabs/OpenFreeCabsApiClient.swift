@@ -11,20 +11,17 @@ import Alamofire
 class OpenFreeCabsApiClient {
     
     static let sharedInstance = OpenFreeCabsApiClient()
-    var alamoFireManager : Alamofire.Manager?
+    var alamoFireManager : Alamofire.SessionManager
     var baseUrl: String = "http://openfreecabs.org/nearest/"
     
     init() {
-        
-        let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
+        let configuration = URLSessionConfiguration.default
         configuration.timeoutIntervalForRequest = 10
         configuration.timeoutIntervalForResource = 10
-        self.alamoFireManager = Alamofire.Manager(configuration: configuration)
-
+        self.alamoFireManager = Alamofire.SessionManager(configuration: configuration)
     }
     
-    func getTaxiList(lat: String, lng: String,completionHandler: (Response<TaxiListModel, BackendError>) -> Void) {
-        alamoFireManager!.request(.GET, baseUrl + lat + "/" + lng).responseObject(completionHandler)
+    func getTaxiList(_ lat: String, lng: String,completionHandler: @escaping (_ response: DataResponse<TaxiListModel>) -> Void) {
+        let _ = alamoFireManager.request(baseUrl + lat + "/" + lng, method: .get).responseObject(completionHandler: completionHandler)
     }
-    
 }

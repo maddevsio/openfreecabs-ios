@@ -17,15 +17,18 @@ final class TaxiListModel: ResponseObjectSerializable, ResponseCollectionSeriali
         self.companies = []
     }
     
-    init?(response: NSHTTPURLResponse, representation: AnyObject) {
+    init?(response: HTTPURLResponse, representation: Any) {
+        guard let representation = representation as? [String: Any]
+            else { return nil }
+        
         self.success = false
-        if (representation.valueForKey("success") != nil && !representation.valueForKey("success")!.isEqual(NSNull())) {
-            self.success = representation.valueForKey("success") as! Bool
+        if (representation["success"] != nil && !(representation["success"] is NSNull)) {
+            self.success = representation["success"] as! Bool
         }
         
         self.companies = []
-        if (representation.valueForKey("companies") != nil && !representation.valueForKey("companies")!.isEqual(NSNull())) {
-            self.companies = CompaniesModel.collection(response: response, representation: representation.valueForKey("companies")!)
+        if (representation["companies"] != nil && !(representation["companies"] is NSNull)) {
+            self.companies = CompaniesModel.collection(response:response, representation: representation["companies"]!)
         }
     }
 }

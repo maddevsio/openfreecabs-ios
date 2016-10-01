@@ -16,18 +16,22 @@ final class DriversModel: ResponseObjectSerializable, ResponseCollectionSerializ
         self.lng = 0
     }
     
-    init?(response: NSHTTPURLResponse, representation: AnyObject) {
+    init?(response: HTTPURLResponse, representation: Any) {
+        guard let representation = representation as? [String: Any]
+            else { return nil }
+        
         self.lat = 0
-        if (representation.valueForKey("lat") != nil && !representation.valueForKey("lat")!.isEqual(NSNull())) {
-            self.lat = representation.valueForKey("lat") as! Double
+        if (representation["lat"] != nil && !(representation["lat"] is NSNull)) {
+            self.lat = representation["lat"] as! Double
         }
+        
         self.lng = 0
-        if (representation.valueForKey("lon") != nil && !representation.valueForKey("lon")!.isEqual(NSNull())) {
-            self.lng = representation.valueForKey("lon") as! Double
+        if (representation["lon"] != nil && !(representation["lon"] is NSNull)) {
+            self.lng = representation["lon"] as! Double
         }
     }
     
-    class func collection(response response: NSHTTPURLResponse, representation: AnyObject) -> [DriversModel] {
+   static func collection(response: HTTPURLResponse, representation: Any) -> [DriversModel] {
         let taxiArray = representation as! [AnyObject]
         return taxiArray.map({DriversModel(response:response, representation: $0)! })
     }

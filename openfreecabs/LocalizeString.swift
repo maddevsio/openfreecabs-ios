@@ -12,13 +12,13 @@ extension String {
     func localized() -> String {
         var lang: [String] = []
         
-        if (NSUserDefaults.standardUserDefaults().valueForKey("selectedLang") != nil) {
-            lang.append(NSUserDefaults.standardUserDefaults().valueForKey("selectedLang") as! String)
+        if (UserDefaults.standard.value(forKey: "selectedLang") != nil) {
+            lang.append(UserDefaults.standard.value(forKey: "selectedLang") as! String)
         } else {
-            lang = NSBundle.mainBundle().preferredLocalizations
+            lang = Bundle.main.preferredLocalizations
         }
-        if let path = NSBundle.mainBundle().pathForResource(lang[0], ofType: "lproj"), bundle = NSBundle(path: path) {
-            return bundle.localizedStringForKey(self, value: nil, table: nil)
+        if let path = Bundle.main.path(forResource: lang[0], ofType: "lproj"), let bundle = Bundle(path: path) {
+            return bundle.localizedString(forKey: self, value: nil, table: nil)
         }
         return self
     }
